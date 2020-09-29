@@ -1,3 +1,9 @@
 /RobotGame/Logs
 /RobotGame/Temp
 /RobotGame/Library
+/RobotGame/.vs/RobotGame/v16/.suo
+/RobotGame/Assembly-CSharp.csproj
+/RobotGame/RobotGame.sln
+/RobotGame/UserSettings/EditorUserSettings.asset
+/RobotGame/obj/Debug/Assembly-CSharp.csprojAssemblyReference.cache
+/RobotGame/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache

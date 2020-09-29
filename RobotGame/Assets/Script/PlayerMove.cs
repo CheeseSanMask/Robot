@@ -4,15 +4,24 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    // 移動速度
+    private Vector3 velocity_;
+
+
+    // 更新
+    private void Update()
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+
+    private void Move()
     {
-        
+
+
+        if( Input.GetKeyDown( KeyCode.W ) )
+        {
+
+        }
     }
 }
