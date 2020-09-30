@@ -8,8 +8,17 @@ public class PlayerManager : MonoBehaviour
     // 入力管理
     [SerializeField] private InputManager inputManager_;
 
+    // カメラ
+    [SerializeField] private Camera camera_;
+
     // 移動速度
     private static readonly float Move_Velocity_ = 5.0f;
+
+    // カメラ速度
+    private static readonly float Camera_Horizontal_Velocity_ = 0.5f;
+
+    // カメラ速度
+    private static readonly float Camera_Vertical_Velocity_ = 0.05f;
 
     // リジッドボディ
     Rigidbody rigidBody_;
@@ -35,7 +44,7 @@ public class PlayerManager : MonoBehaviour
     {
         Move();
 
-        FacingForward();
+        CameraMove();
 
         Jump();
 
@@ -46,21 +55,18 @@ public class PlayerManager : MonoBehaviour
     // プレイヤーの移動
     private void Move()
     {
-        
+        Vector3 cameraForward = Vector3.Scale( camera_.transform.forward, new Vector3( 1, 0, 1 ) ).normalized;
+
+        rigidBody_.velocity = inputManager_.MoveInput()*Move_Velocity_;
     }
 
 
     // 移動方向を向く
-    private void FacingForward()
+    private void CameraMove()
     {
-        Vector3 nowPosition = new Vector3( this.transform.position.x, 0, this.transform.position.z );
+        Vector3 cameraInput = inputManager_.CameraInput();
 
-        Vector3 difference = nowPosition-lastPosition_;
-
-        if( difference.magnitude >= 0.01f )
-        {
-            this.transform.rotation = Quaternion.LookRotation( difference );
-        }
+        camera_.transform.RotateAround( this.transform.position,    Vector3.up,       cameraInput.x*Camera_Horizontal_Velocity_ );
     }
 
 
