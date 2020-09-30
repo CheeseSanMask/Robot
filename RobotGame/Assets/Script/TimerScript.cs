@@ -12,7 +12,7 @@ public class TimerScript : MonoBehaviour
     void Start()
     {
         remainTime = 155f;
-        timerText = GameObject.Find("Text").GetComponentInChildren<Text>();
+        timerText = GameObject.Find("Timer").GetComponentInChildren<Text>();
     }
 
     // Update is called once per frame
@@ -30,7 +30,7 @@ public class TimerScript : MonoBehaviour
         // ﾀｲﾏｰ表示用UIﾃｷｽﾄに時間を表示する
         timerText.text = remainTime.ToString("f2");
 
-
+        // 制限時間終了ﾛｸﾞ(ﾃｽﾄ@@@)
         if(remainTime <= 0f)
         {
             Debug.Log("制限時間終了");

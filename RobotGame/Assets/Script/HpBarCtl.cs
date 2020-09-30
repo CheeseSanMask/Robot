@@ -19,15 +19,11 @@ public class HpBarCtl : MonoBehaviour
     {
         float _hp = _slider.value;      // 現在の_sliderの値
 
-        _hp += 0.05f;
 
-        if(_hp > _slider.maxValue)
+        // HP体力が0のとき全快する(ﾃｽﾄ用@@@)
+        if(_hp <= 0)
         {
-            _hp = 0;
-        }
-        if(_hp < 0)
-        {
-            _hp = 0;
+            _hp = 100;
         }
 
         // HPｹﾞｰｼﾞに代替変数を設定
