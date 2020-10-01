@@ -10,6 +10,13 @@ public class InputManager : MonoBehaviour
         float horizontal = Input.GetAxis(  "Horizontal"    );
         float vertical   = Input.GetAxis(  "Vertical"      );
 
+        float inputNumSize = Mathf.Abs( horizontal )+Mathf.Abs( vertical );
+
+        if( inputNumSize < 0.1f )
+        {
+            return Vector3.zero;
+        }
+
         return new Vector3( horizontal, 0, vertical );
     }
 

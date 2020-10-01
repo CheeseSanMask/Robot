@@ -12,30 +12,35 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private Camera camera_;
 
     // 移動速度
-    private static readonly float Move_Velocity_ = 5.0f;
+    private static readonly float Move_Velocity_ = 15.0f;
 
-    // カメラ速度
-    private static readonly float Camera_Horizontal_Velocity_ = 0.5f;
-
-    // カメラ速度
-    private static readonly float Camera_Vertical_Velocity_ = 0.05f;
+    // ジャンプ速度
+    private static readonly float Jump_Velocity_ = 10.0f;
 
     // リジッドボディ
-    Rigidbody rigidBody_;
-
-    // 前回更新時の座標
-    Vector3 lastPosition_;
+    private Rigidbody rigidBody_;
 
     // ジャンプ中か
-    bool isJump_;
+    private bool isJump_;
+
+    // 移動量
+    private Vector3 moveDistance_;
+
+    public Vector3 MoveDistance
+    {
+        get
+        {
+            return moveDistance_;
+        }
+    }
 
 
     // コンストラクタ
     private void Awake()
     {
-        lastPosition_ = Vector3.zero;
         rigidBody_  = GetComponent<Rigidbody>();
         isJump_     = false;
+        moveDistance_ = Vector3.zero;
     }
 
 
@@ -44,29 +49,39 @@ public class PlayerManager : MonoBehaviour
     {
         Move();
 
-        CameraMove();
+        ForwardRotation();
 
         Jump();
-
-        lastPosition_ = new Vector3( this.transform.position.x, 0, this.transform.position.z );
     }
 
 
     // プレイヤーの移動
     private void Move()
     {
-        Vector3 cameraForward = Vector3.Scale( camera_.transform.forward, new Vector3( 1, 0, 1 ) ).normalized;
+        Vector3 inputVector = inputManager_.MoveInput();
 
-        rigidBody_.velocity = inputManager_.MoveInput()*Move_Velocity_;
+        Vector3 cameraForward = Vector3.Scale( camera_.transform.forward , new Vector3( 1, 0, 1 ) ).normalized;
+        Vector3 moveForward = cameraForward*inputVector.z+camera_.transform.right*inputVector.x;
+
+        moveDistance_ = moveForward*Move_Velocity_;
+
+        rigidBody_.velocity = moveDistance_;
     }
 
 
-    // 移動方向を向く
-    private void CameraMove()
+    // プレイヤー回転
+    private void ForwardRotation()
     {
-        Vector3 cameraInput = inputManager_.CameraInput();
+        if( inputManager_.MoveInput() == Vector3.zero )
+        {
+            return;
+        }
 
-        camera_.transform.RotateAround( this.transform.position,    Vector3.up,       cameraInput.x*Camera_Horizontal_Velocity_ );
+        Vector3 nowPosition = new Vector3( this.transform.position.x, 0, this.transform.position.z );
+        Vector3 cameraPosition = new Vector3( camera_.transform.position.x, 0, camera_.transform.position.z );
+        Vector3 forward = nowPosition-cameraPosition;
+
+        this.transform.rotation = Quaternion.LookRotation( forward );
     }
 
 
@@ -77,7 +92,7 @@ public class PlayerManager : MonoBehaviour
 
         if( isJump_ )
         {
-            jumpVelocity = 5.5f;
+            jumpVelocity = Jump_Velocity_;
 
             if( 5.0f <= this.transform.position.y )
             {
@@ -102,10 +117,12 @@ public class PlayerManager : MonoBehaviour
             }
             else
             {
-                jumpVelocity = -5.5f;
+                jumpVelocity = -Jump_Velocity_;
             }
         }
 
         rigidBody_.velocity = new Vector3( rigidBody_.velocity.x, jumpVelocity, rigidBody_.velocity.z );
+
+        moveDistance_ = new Vector3( moveDistance_.x, jumpVelocity, moveDistance_.z );
     }
 }
