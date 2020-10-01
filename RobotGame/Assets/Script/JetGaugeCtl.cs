@@ -25,10 +25,11 @@ public class JetGaugeCtl : MonoBehaviour
         if(remainJet <= 0)
         {
             restFlag = true;
+            _jetGauge.color = new Color(255, 0, 0, 255);
         }
 
         // ｼﾞｪｯﾄ可能のとき
-        if(restFlag == false)
+        if (restFlag == false)
         {
             // ｽﾍﾟｰｽｷｰ入力でｹﾞｰｼﾞを消費する
             if (Input.GetKey("space"))
@@ -51,6 +52,7 @@ public class JetGaugeCtl : MonoBehaviour
             if (remainJet >= 1)
             {
                 restFlag = false;
+                _jetGauge.color = new Color(0, 218, 231, 255);
             }
         }
 

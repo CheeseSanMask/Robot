@@ -15,17 +15,28 @@ public class ReloadAnimCtl : MonoBehaviour
 
     // ｱﾆﾒｰｼｮﾝ再生用ｶｳﾝﾄ
     float animCnt = 0f;
+    bool reloadFlag = false;
 
     // Update is called once per frame
     void Update()
     {
-        // 毎ﾌﾚｰﾑ加算
-        animCnt += 0.0005f;
-
-        // 1周したら最初に戻す
-        if(animCnt >= 1)
+        // ﾘﾛｰﾄﾞをする
+        if(Input.GetKeyDown("r"))
         {
-            animCnt = 0;
+            reloadFlag = true;
+        }
+        // ﾘﾛｰﾄﾞ中のｱﾆﾒｰｼｮﾝをする
+        if(reloadFlag)
+        {
+            // 毎ﾌﾚｰﾑ加算
+            animCnt += 0.0005f;
+
+            // 1周したら最初に戻す
+            if (animCnt >= 1)
+            {
+                animCnt = 0;
+                reloadFlag = false;
+            }
         }
 
         // ｲﾒｰｼﾞｵﾌﾞｼﾞｪｸﾄに再生値を渡す
