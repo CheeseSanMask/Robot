@@ -12,7 +12,7 @@ public class InputManager : MonoBehaviour
 
         float inputNumSize = Mathf.Abs( horizontal )+Mathf.Abs( vertical );
 
-        if( inputNumSize < 0.1f )
+        if( inputNumSize < 0.3f )
         {
             return Vector3.zero;
         }
@@ -27,6 +27,13 @@ public class InputManager : MonoBehaviour
         float horizontal = Input.GetAxis(  "CameraHorizontal"    );
         float vertical   = Input.GetAxis(  "CameraVertical"      );
 
+        float inputNumSize = Mathf.Abs( horizontal )+Mathf.Abs( vertical );
+
+        if( inputNumSize < 0.3f )
+        {
+            return Vector3.zero;
+        }
+
         return new Vector3( horizontal, 0, -vertical );
     }
 
@@ -34,11 +41,30 @@ public class InputManager : MonoBehaviour
     // ジャンプ入力
     public bool JumpInput()
     {
-        if( Input.GetButtonDown(      "Jump"     ) )
+        return Input.GetButtonDown( "Jump" );
+    }
+
+
+    // 武器切り替え入力
+    public int WeaponChangeInput()
+    {
+        if( Input.GetButtonDown( "ChangeLeft" ) )
         {
-            return true;
+            return -1;
         }
 
-        return false;
+        if( Input.GetButtonDown( "ChangeRight" ) )
+        {
+            return +1;
+        }
+
+        return 0;
+    }
+
+
+    // 射撃入力
+    public bool ShotInput()
+    {
+        return Input.GetButtonDown( "Shot" );
     }
 }

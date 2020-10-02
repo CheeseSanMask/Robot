@@ -9,7 +9,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private InputManager inputManager_;
 
     // カメラ
-    [SerializeField] private Camera camera_;
+    [SerializeField] private CameraMove camera_;
 
     // 移動速度
     private static readonly float Move_Velocity_ = 15.0f;
@@ -23,9 +23,14 @@ public class PlayerManager : MonoBehaviour
     // ジャンプ中か
     private bool isJump_;
 
+    // 武器リスト
+    [SerializeField] private List<GameObject> weapons;
+
+    //  現在の武器種類
+    private WeaponType currentWeapon_;
+
     // 移動量
     private Vector3 moveDistance_;
-
     public Vector3 MoveDistance
     {
         get
@@ -39,7 +44,11 @@ public class PlayerManager : MonoBehaviour
     private void Awake()
     {
         rigidBody_  = GetComponent<Rigidbody>();
+        
         isJump_     = false;
+
+        currentWeapon_ = WeaponType.MainWeapon;
+
         moveDistance_ = Vector3.zero;
     }
 
@@ -49,9 +58,13 @@ public class PlayerManager : MonoBehaviour
     {
         Move();
 
+        Shot();
+
         ForwardRotation();
 
         Jump();
+
+        WeaponChange();
     }
 
 
@@ -66,6 +79,30 @@ public class PlayerManager : MonoBehaviour
         moveDistance_ = moveForward*Move_Velocity_;
 
         rigidBody_.velocity = moveDistance_;
+    }
+
+
+    // 撃つ
+    private void Shot()
+    {
+        if( inputManager_.ShotInput() )
+        {
+            BulletManager bullet = Instantiate( weapons[(int)currentWeapon_] ).GetComponent<BulletManager>();
+            bullet.transform.position = this.transform.position+this.transform.forward*2;
+            bullet.transform.rotation = Quaternion.LookRotation( this.transform.forward );
+
+            if( camera_.LockOn() )
+            {
+                if( camera_.LockOnTarget != null )
+                {
+                    bullet.MoveDirection = ( camera_.LockOnTarget.transform.position-this.transform.position ).normalized;
+                }
+            }
+            else
+            {
+                bullet.MoveDirection = this.transform.forward;
+            }
+        }
     }
 
 
@@ -124,5 +161,30 @@ public class PlayerManager : MonoBehaviour
         rigidBody_.velocity = new Vector3( rigidBody_.velocity.x, jumpVelocity, rigidBody_.velocity.z );
 
         moveDistance_ = new Vector3( moveDistance_.x, jumpVelocity, moveDistance_.z );
+    }
+
+
+    private void WeaponChange()
+    {
+        int moveNumber = inputManager_.WeaponChangeInput();
+
+        if ( moveNumber == 0 )
+        {
+            return;
+        }
+
+        int nextWeaponNumber = (int)currentWeapon_+moveNumber;
+
+        if( nextWeaponNumber < 0 )
+        {
+            nextWeaponNumber = (int)WeaponType.Max-1;
+        }
+
+        if( (int)WeaponType.Max-1 < nextWeaponNumber )
+        {
+            nextWeaponNumber = 0;
+        }
+
+        currentWeapon_ = (WeaponType)nextWeaponNumber;
     }
 }
