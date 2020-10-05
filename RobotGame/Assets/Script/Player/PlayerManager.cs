@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -28,6 +29,9 @@ public class PlayerManager : MonoBehaviour
 
     //  現在の武器種類
     private WeaponType currentWeapon_;
+
+    // サーチ対象オブジェクト
+    List<GameObject> searchTargetObjects_ = new List<GameObject>();
 
     // 移動量
     private Vector3 moveDistance_;
@@ -91,12 +95,9 @@ public class PlayerManager : MonoBehaviour
             bullet.transform.position = this.transform.position+this.transform.forward*2;
             bullet.transform.rotation = Quaternion.LookRotation( this.transform.forward );
 
-            if( camera_.LockOn() )
+            if( LockOn() != null )
             {
-                if( camera_.LockOnTarget != null )
-                {
-                    bullet.MoveDirection = ( camera_.LockOnTarget.transform.position-this.transform.position ).normalized;
-                }
+                bullet.MoveDirection = ( LockOn().transform.position-this.transform.position ).normalized;
             }
             else
             {
@@ -186,5 +187,73 @@ public class PlayerManager : MonoBehaviour
         }
 
         currentWeapon_ = (WeaponType)nextWeaponNumber;
+    }
+
+
+    // ロックオン
+    private GameObject LockOn()
+    {
+        if( searchTargetObjects_.Count == 0 )
+        {
+            return null;
+        }
+
+        GameObject lockOnTarget_ = null;
+
+        for( int number = 0; number < searchTargetObjects_.Count; number++ )
+        {
+            Vector3 direction = ( searchTargetObjects_[number].transform.position-camera_.transform.position ).normalized;
+
+            Ray cameraToObject = new Ray( camera_.transform.position, direction );
+
+            if( Physics.Raycast( cameraToObject ) )
+            {
+                if( searchTargetObjects_[number].tag == "PL2" )
+                {
+                    return searchTargetObjects_[number];
+                }
+
+                if( !lockOnTarget_ )
+                {
+                    lockOnTarget_ = searchTargetObjects_[number];
+                }
+                else
+                {
+                    Vector3 lockOnTargetDistance = lockOnTarget_.transform.position-camera_.transform.position;
+                    Vector3 searchTargetDistance = searchTargetObjects_[number].transform.position-camera_.transform.position;
+
+                    if( searchTargetDistance.magnitude < lockOnTargetDistance.magnitude )
+                    {
+                        lockOnTarget_ = searchTargetObjects_[number];
+                    }
+                }
+            }
+        }
+
+        return lockOnTarget_;
+    }
+
+
+    // 
+    private void OnTriggerEnter( Collider collider )
+    {
+        if( collider.gameObject.layer == 8 )
+        {
+            searchTargetObjects_.Add( collider.gameObject );
+        }
+    }
+
+
+    private void OnTriggerExit( Collider collider )
+    {
+        for( int number = 0; number < searchTargetObjects_.Count; number++ )
+        {
+            if( searchTargetObjects_[number] == collider.gameObject )
+            {
+                searchTargetObjects_.Remove( collider.gameObject );
+
+                return;
+            }
+        }
     }
 }
