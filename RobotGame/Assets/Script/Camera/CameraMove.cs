@@ -52,7 +52,7 @@ public class CameraMove : MonoBehaviour
     // カメラ回転
     private void CameraRotate()
     {
-        Vector3 cameraInput = inputManager_.CameraInput();
+        Vector3 cameraInput = inputManager_.CameraInput( playerManager_.PlayerNumber );
 
         if( cameraInput == Vector3.zero )
         {

@@ -12,6 +12,16 @@ public class PlayerManager : MonoBehaviour
     // カメラ
     [SerializeField] private CameraMove camera_;
 
+    // プレイヤー番号
+    [SerializeField] private int playerNumber_;
+    public int PlayerNumber
+    {
+        get
+        {
+            return playerNumber_;
+        }
+    }
+
     // 移動速度
     private static readonly float Move_Velocity_ = 15.0f;
 
@@ -75,7 +85,7 @@ public class PlayerManager : MonoBehaviour
     // プレイヤーの移動
     private void Move()
     {
-        Vector3 inputVector = inputManager_.MoveInput();
+        Vector3 inputVector = inputManager_.MoveInput( playerNumber_ );
 
         Vector3 cameraForward = Vector3.Scale( camera_.transform.forward , new Vector3( 1, 0, 1 ) ).normalized;
         Vector3 moveForward = cameraForward*inputVector.z+camera_.transform.right*inputVector.x;
@@ -89,7 +99,7 @@ public class PlayerManager : MonoBehaviour
     // 撃つ
     private void Shot()
     {
-        if( inputManager_.ShotInput() )
+        if( inputManager_.ShotInput( playerNumber_ ) )
         {
             BulletManager bullet = Instantiate( weapons[(int)currentWeapon_] ).GetComponent<BulletManager>();
             bullet.transform.position = this.transform.position+this.transform.forward*2;
@@ -110,7 +120,7 @@ public class PlayerManager : MonoBehaviour
     // プレイヤー回転
     private void ForwardRotation()
     {
-        if( inputManager_.MoveInput() == Vector3.zero )
+        if( inputManager_.MoveInput( playerNumber_ ) == Vector3.zero )
         {
             return;
         }
@@ -141,7 +151,7 @@ public class PlayerManager : MonoBehaviour
         {
             if( this.transform.position.y <= 0.1f )
             {
-                if( inputManager_.JumpInput() )
+                if( inputManager_.JumpInput( playerNumber_ ) )
                 {
                     isJump_ = true;
                 }
@@ -167,7 +177,7 @@ public class PlayerManager : MonoBehaviour
 
     private void WeaponChange()
     {
-        int moveNumber = inputManager_.WeaponChangeInput();
+        int moveNumber = inputManager_.WeaponChangeInput( playerNumber_ );
 
         if ( moveNumber == 0 )
         {

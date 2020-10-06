@@ -2,13 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class InputManager : MonoBehaviour
 {
-    // 移動入力
-    public Vector3 MoveInput()
+    // AIモード
+    private bool isAI_;
+
+
+    // コンストラクタ
+    private void Awake()
     {
-        float horizontal = Input.GetAxis(  "Horizontal"    );
-        float vertical   = Input.GetAxis(  "Vertical"      );
+        isAI_ = false;
+    }
+
+
+    // 移動入力
+    public Vector3 MoveInput( int number )
+    {
+        float horizontal = Input.GetAxis(  "Horizontal_"+number    );
+        float vertical   = Input.GetAxis(  "Vertical_"+number      );
 
         float inputNumSize = Mathf.Abs( horizontal )+Mathf.Abs( vertical );
 
@@ -22,10 +34,10 @@ public class InputManager : MonoBehaviour
 
 
     // カメラ入力
-    public Vector3 CameraInput()
+    public Vector3 CameraInput( int number )
     {
-        float horizontal = Input.GetAxis(  "CameraHorizontal"    );
-        float vertical   = Input.GetAxis(  "CameraVertical"      );
+        float horizontal = Input.GetAxis(  "CameraHorizontal_"+number    );
+        float vertical   = Input.GetAxis(  "CameraVertical_"+number      );
 
         float inputNumSize = Mathf.Abs( horizontal )+Mathf.Abs( vertical );
 
@@ -39,21 +51,21 @@ public class InputManager : MonoBehaviour
 
 
     // ジャンプ入力
-    public bool JumpInput()
+    public bool JumpInput( int number )
     {
-        return Input.GetButtonDown( "Jump" );
+        return Input.GetButtonDown( "Jump_"+number );
     }
 
 
     // 武器切り替え入力
-    public int WeaponChangeInput()
+    public int WeaponChangeInput( int number )
     {
-        if( Input.GetButtonDown( "ChangeLeft" ) )
+        if( Input.GetButtonDown( "ChangeLeft_"+number ) )
         {
             return -1;
         }
 
-        if( Input.GetButtonDown( "ChangeRight" ) )
+        if( Input.GetButtonDown( "ChangeRight_"+number ) )
         {
             return +1;
         }
@@ -63,8 +75,8 @@ public class InputManager : MonoBehaviour
 
 
     // 射撃入力
-    public bool ShotInput()
+    public bool ShotInput( int number )
     {
-        return Input.GetButtonDown( "Shot" );
+        return Input.GetButtonDown( "Shot_"+number );
     }
 }
