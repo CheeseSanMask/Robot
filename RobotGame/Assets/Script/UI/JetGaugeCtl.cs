@@ -35,6 +35,7 @@ public class JetGaugeCtl : MonoBehaviour
             if (Input.GetKey("space"))
             {
                 remainJet -= 0.001f;
+                _jetGauge.color = new Color(0, 218, 231, 255);
             }
             else
             {
@@ -52,10 +53,14 @@ public class JetGaugeCtl : MonoBehaviour
             if (remainJet >= 1)
             {
                 restFlag = false;
-                _jetGauge.color = new Color(0, 218, 231, 255);
             }
         }
 
+        // 通常は非表示
+        if (remainJet >= 1)
+        {
+            _jetGauge.color = new Color(0, 218, 231, 0);
+        }
         // ﾛｰｶﾙ残量値をｽﾌﾟﾗｲﾄに渡す
         _jetGauge.fillAmount = remainJet;
     }
