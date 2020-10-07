@@ -8,6 +8,7 @@ TagManager:
   - PL2
   - Destructible
   - Shot
+  - NonDestructible
   layers:
   - Default
   - TransparentFX

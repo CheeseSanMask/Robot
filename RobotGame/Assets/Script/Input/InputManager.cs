@@ -5,15 +5,10 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
+    [SerializeField] PlayerManager[] players_;
+
     // AIモード
-    private bool isAI_;
-
-
-    // コンストラクタ
-    private void Awake()
-    {
-        isAI_ = false;
-    }
+    [SerializeField] private bool isAI_;
 
 
     // 移動入力
@@ -78,5 +73,12 @@ public class InputManager : MonoBehaviour
     public bool ShotInput( int number )
     {
         return Input.GetButtonDown( "Shot_"+number );
+    }
+
+
+    // リロード入力
+    public bool ReloadInput( int number )
+    {
+        return Input.GetButtonDown( "Reload_"+number );
     }
 }

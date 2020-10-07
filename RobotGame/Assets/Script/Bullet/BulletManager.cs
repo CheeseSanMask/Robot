@@ -7,7 +7,18 @@ public class BulletManager : MonoBehaviour
     // リジッドボディ
     private Rigidbody rigidBody_;
 
+    // 弾速
     [SerializeField] private float bulletSpeed_;
+
+    // 火力
+    private float attackPower_;
+    public float AttackPower
+    {
+        set
+        {
+            attackPower_ = value;
+        }
+    }
 
     // 進行方向
     private Vector3 moveDirection_;
@@ -24,11 +35,23 @@ public class BulletManager : MonoBehaviour
         }
     }
 
+    // 親
+    private int parentNumber_;
+    public int ParentNumber
+    {
+        set
+        {
+            parentNumber_ = value;
+        }
+    }
+
 
     // コンストラクタ
         private void Awake()
     {
         rigidBody_ = GetComponent<Rigidbody>();
+
+
     }
 
 
@@ -52,5 +75,25 @@ public class BulletManager : MonoBehaviour
     private void WaitDestroy()
     {
         Destroy( this.gameObject, 5.0f );
+    }
+
+
+    // 着弾
+    private void OnTriggerEnter( Collider collider )
+    {
+        if( ( collider.name != "PL"+parentNumber_ )
+        &&  ( collider.gameObject.layer == 8    )
+        ){
+            if( collider.tag == "PL"+( parentNumber_ == 2 ? 0 : 1 ) )
+            {
+                collider.GetComponent<PlayerManager>().HitDamege( attackPower_ );
+            }
+            else
+            {
+                
+            }
+
+            Destroy( this.gameObject, 0.1f );
+        }
     }
 }

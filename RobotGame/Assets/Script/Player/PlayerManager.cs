@@ -22,14 +22,17 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    // 移動速度
-    private static readonly float Move_Velocity_ = 15.0f;
-
     // ジャンプ速度
     private static readonly float Jump_Velocity_ = 10.0f;
 
     // リジッドボディ
     private Rigidbody rigidBody_;
+
+    // ステータス
+    private PlayerStatus playerStatus_;
+
+    // 最大装弾数
+    private float owned_Bullet_Max_Number_;
 
     // ジャンプ中か
     private bool isJump_;
@@ -58,12 +61,25 @@ public class PlayerManager : MonoBehaviour
     private void Awake()
     {
         rigidBody_  = GetComponent<Rigidbody>();
-        
+
+        playerStatus_ = GetComponent<PlayerStatus>();
+
+        owned_Bullet_Max_Number_ = playerStatus_.OwnedBulletNumber;
+
         isJump_     = false;
 
         currentWeapon_ = WeaponType.MainWeapon;
 
         moveDistance_ = Vector3.zero;
+    }
+
+
+    // 
+    private void Start()
+    {
+        owned_Bullet_Max_Number_ = playerStatus_.AllBulletNumber/3;
+        playerStatus_.AllBulletNumber -= owned_Bullet_Max_Number_;
+        playerStatus_.OwnedBulletNumber = owned_Bullet_Max_Number_;
     }
 
 
@@ -73,6 +89,8 @@ public class PlayerManager : MonoBehaviour
         Move();
 
         Shot();
+
+        Reload();
 
         ForwardRotation();
 
@@ -90,7 +108,7 @@ public class PlayerManager : MonoBehaviour
         Vector3 cameraForward = Vector3.Scale( camera_.transform.forward , new Vector3( 1, 0, 1 ) ).normalized;
         Vector3 moveForward = cameraForward*inputVector.z+camera_.transform.right*inputVector.x;
 
-        moveDistance_ = moveForward*Move_Velocity_;
+        moveDistance_ = moveForward*playerStatus_.MoveSpeed;
 
         rigidBody_.velocity = moveDistance_;
     }
@@ -101,9 +119,16 @@ public class PlayerManager : MonoBehaviour
     {
         if( inputManager_.ShotInput( playerNumber_ ) )
         {
+            if( playerStatus_.OwnedBulletNumber <= 0 )
+            {
+                return;
+            }
+
             BulletManager bullet = Instantiate( weapons[(int)currentWeapon_] ).GetComponent<BulletManager>();
-            bullet.transform.position = this.transform.position+this.transform.forward*2;
+            bullet.transform.position = this.transform.position;
             bullet.transform.rotation = Quaternion.LookRotation( this.transform.forward );
+            bullet.AttackPower = playerStatus_.AttackPower;
+            bullet.ParentNumber = playerNumber_;
 
             if( LockOn() != null )
             {
@@ -113,6 +138,8 @@ public class PlayerManager : MonoBehaviour
             {
                 bullet.MoveDirection = this.transform.forward;
             }
+
+            --playerStatus_.OwnedBulletNumber;
         }
     }
 
@@ -172,6 +199,27 @@ public class PlayerManager : MonoBehaviour
         rigidBody_.velocity = new Vector3( rigidBody_.velocity.x, jumpVelocity, rigidBody_.velocity.z );
 
         moveDistance_ = new Vector3( moveDistance_.x, jumpVelocity, moveDistance_.z );
+    }
+
+
+    private void Reload()
+    {
+        if( ( !inputManager_.ReloadInput( playerNumber_ ) )
+        ||  (  playerStatus_.OwnedBulletNumber == owned_Bullet_Max_Number_ )
+        ){
+            return;
+        }
+
+        float addBulletNumber = owned_Bullet_Max_Number_-playerStatus_.OwnedBulletNumber;
+
+        if( playerStatus_.AllBulletNumber < addBulletNumber )
+        {
+            addBulletNumber = playerStatus_.AllBulletNumber;
+            owned_Bullet_Max_Number_ = playerStatus_.AllBulletNumber;
+        }
+
+        playerStatus_.AllBulletNumber -= addBulletNumber;
+        playerStatus_.OwnedBulletNumber = owned_Bullet_Max_Number_;
     }
 
 
@@ -244,7 +292,16 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    // 
+    // ダメージを受けた
+    public void HitDamege( float damage )
+    {
+        float actuallyDamage = Mathf.Clamp( damage-playerStatus_.DefencePower, 5, damage );
+
+        playerStatus_.HitPoint -= actuallyDamage;
+    }
+
+
+    // ロックオン圏内に入った
     private void OnTriggerEnter( Collider collider )
     {
         if( collider.gameObject.layer == 8 )
@@ -254,6 +311,7 @@ public class PlayerManager : MonoBehaviour
     }
 
 
+    // ロックオン圏内から出た
     private void OnTriggerExit( Collider collider )
     {
         for( int number = 0; number < searchTargetObjects_.Count; number++ )
