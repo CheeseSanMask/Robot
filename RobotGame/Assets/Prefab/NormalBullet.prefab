@@ -113,6 +113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletSpeed_: 25
+  attackPower_: 20
 --- !u!135 &1796302179564078507
 SphereCollider:
   m_ObjectHideFlags: 0

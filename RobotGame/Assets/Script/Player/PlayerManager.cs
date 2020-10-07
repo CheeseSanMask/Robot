@@ -4,6 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
+public enum JumpStatus
+{
+    Rise,
+    Fall,
+    QuickFall,
+    Non
+}
+
+
 public class PlayerManager : MonoBehaviour
 {
     // 入力管理
@@ -23,7 +33,7 @@ public class PlayerManager : MonoBehaviour
     }
 
     // ジャンプ速度
-    private static readonly float Jump_Velocity_ = 10.0f;
+    private static readonly float Jump_Velocity_ = 7.5f;
 
     // リジッドボディ
     private Rigidbody rigidBody_;
@@ -34,8 +44,8 @@ public class PlayerManager : MonoBehaviour
     // 最大装弾数
     private float owned_Bullet_Max_Number_;
 
-    // ジャンプ中か
-    private bool isJump_;
+    // ジャンプ状態
+    private JumpStatus jumpStatus_;
 
     // 武器リスト
     [SerializeField] private List<GameObject> weapons;
@@ -66,7 +76,7 @@ public class PlayerManager : MonoBehaviour
 
         owned_Bullet_Max_Number_ = playerStatus_.OwnedBulletNumber;
 
-        isJump_     = false;
+        jumpStatus_ = JumpStatus.Non;
 
         currentWeapon_ = WeaponType.MainWeapon;
 
@@ -74,7 +84,7 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    // 
+    // 初期装填
     private void Start()
     {
         owned_Bullet_Max_Number_ = playerStatus_.AllBulletNumber/3;
@@ -127,7 +137,6 @@ public class PlayerManager : MonoBehaviour
             BulletManager bullet = Instantiate( weapons[(int)currentWeapon_] ).GetComponent<BulletManager>();
             bullet.transform.position = this.transform.position;
             bullet.transform.rotation = Quaternion.LookRotation( this.transform.forward );
-            bullet.AttackPower = playerStatus_.AttackPower;
             bullet.ParentNumber = playerNumber_;
 
             if( LockOn() != null )
@@ -163,42 +172,80 @@ public class PlayerManager : MonoBehaviour
     // ジャンプ
     private void Jump()
     {
-        float jumpVelocity = 0.0f;
-
-        if( isJump_ )
-        {
-            jumpVelocity = Jump_Velocity_;
-
-            if( 5.0f <= this.transform.position.y )
-            {
-                isJump_ = false;
-            }
+        if( ( jumpStatus_ == JumpStatus.Non )
+        &&  ( inputManager_.JumpInput( playerNumber_ ) )
+        ){
+            jumpStatus_ = JumpStatus.Rise;
         }
-        else
+
+        if( 0.1f < this.transform.position.y )
         {
-            if( this.transform.position.y <= 0.1f )
+            if( inputManager_.JumpInput( playerNumber_ ) )
             {
-                if( inputManager_.JumpInput( playerNumber_ ) )
-                {
-                    isJump_ = true;
-                }
-
-                this.transform.position = new Vector3( this.transform.position.x, 0.1f, this.transform.position.z );
-            }
-
-            if( this.transform.position.y <= 0.1f )
-            {
-                jumpVelocity = 0.0f;
-            }
-            else
-            {
-                jumpVelocity = -Jump_Velocity_;
+                jumpStatus_ = JumpStatus.QuickFall;
             }
         }
 
-        rigidBody_.velocity = new Vector3( rigidBody_.velocity.x, jumpVelocity, rigidBody_.velocity.z );
+        Rise();
 
-        moveDistance_ = new Vector3( moveDistance_.x, jumpVelocity, moveDistance_.z );
+        Fall();
+
+        QuickFall();
+    }
+
+
+    // 上昇
+    private void Rise()
+    {
+        if( jumpStatus_ != JumpStatus.Rise )
+        {
+            return;
+        }
+
+        rigidBody_.velocity = new Vector3( rigidBody_.velocity.x, Jump_Velocity_, rigidBody_.velocity.z );
+
+        if( 5.0f < this.transform.position.y )
+        {
+            jumpStatus_ = JumpStatus.Fall;
+        }
+    }
+
+
+    // 下降
+    private void Fall()
+    {
+        if( jumpStatus_ != JumpStatus.Fall )
+        {
+            return;
+        }
+
+        rigidBody_.velocity = new Vector3( rigidBody_.velocity.x, -Jump_Velocity_, rigidBody_.velocity.z );
+
+        if( this.transform.position.y < 0.1f )
+        {
+            rigidBody_.velocity = new Vector3( rigidBody_.velocity.x, 0, rigidBody_.velocity.z );
+
+            jumpStatus_ = JumpStatus.Non;
+        }
+    }
+
+
+    // 急降下
+    private void QuickFall()
+    {
+        if( jumpStatus_ != JumpStatus.QuickFall )
+        {
+            return;
+        }
+
+        rigidBody_.velocity = new Vector3( rigidBody_.velocity.x, -Jump_Velocity_*2, rigidBody_.velocity.z );
+
+        if( this.transform.position.y < 0.1f )
+        {
+            rigidBody_.velocity = new Vector3( rigidBody_.velocity.x, 0, rigidBody_.velocity.z );
+
+            jumpStatus_ = JumpStatus.Non;
+        }
     }
 
 

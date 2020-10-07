@@ -11,12 +11,12 @@ public class BulletManager : MonoBehaviour
     [SerializeField] private float bulletSpeed_;
 
     // 火力
-    private float attackPower_;
+    [SerializeField] private float attackPower_;
     public float AttackPower
     {
-        set
+        get
         {
-            attackPower_ = value;
+            return attackPower_;
         }
     }
 
@@ -35,6 +35,9 @@ public class BulletManager : MonoBehaviour
         }
     }
 
+    // 当たったか
+    private bool isCollision_;
+
     // 親
     private int parentNumber_;
     public int ParentNumber
@@ -47,11 +50,11 @@ public class BulletManager : MonoBehaviour
 
 
     // コンストラクタ
-        private void Awake()
+    private void Awake()
     {
         rigidBody_ = GetComponent<Rigidbody>();
 
-
+        isCollision_ = false;
     }
 
 
@@ -81,8 +84,13 @@ public class BulletManager : MonoBehaviour
     // 着弾
     private void OnTriggerEnter( Collider collider )
     {
-        if( ( collider.name != "PL"+parentNumber_ )
-        &&  ( collider.gameObject.layer == 8    )
+        if( isCollision_ )
+        {
+            return;
+        }
+
+        if( ( collider.name != "PL"+parentNumber_   )
+        &&  ( collider.gameObject.layer == 8        )
         ){
             if( collider.tag == "PL"+( parentNumber_ == 2 ? 0 : 1 ) )
             {
@@ -94,6 +102,8 @@ public class BulletManager : MonoBehaviour
             }
 
             Destroy( this.gameObject, 0.1f );
+
+            isCollision_ = true;
         }
     }
 }
