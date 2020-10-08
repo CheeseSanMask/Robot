@@ -53,6 +53,9 @@ public class PlayerManager : MonoBehaviour
     //  現在の武器種類
     private WeaponType currentWeapon_;
 
+    // 前フレームの座標
+    private Vector3 lastPosition_;
+
     // サーチ対象オブジェクト
     List<GameObject> searchTargetObjects_ = new List<GameObject>();
 
@@ -90,6 +93,8 @@ public class PlayerManager : MonoBehaviour
         owned_Bullet_Max_Number_ = playerStatus_.AllBulletNumber/3;
         playerStatus_.AllBulletNumber -= owned_Bullet_Max_Number_;
         playerStatus_.OwnedBulletNumber = owned_Bullet_Max_Number_;
+
+        lastPosition_ = this.transform.position;
     }
 
 
@@ -121,6 +126,10 @@ public class PlayerManager : MonoBehaviour
         moveDistance_ = moveForward*playerStatus_.MoveSpeed;
 
         rigidBody_.velocity = moveDistance_;
+
+        camera_.Move( this.transform.position-lastPosition_ );
+
+        lastPosition_ = this.transform.position;
     }
 
 
@@ -135,8 +144,7 @@ public class PlayerManager : MonoBehaviour
             }
 
             BulletManager bullet = Instantiate( weapons[(int)currentWeapon_] ).GetComponent<BulletManager>();
-            bullet.transform.position = this.transform.position;
-            bullet.transform.rotation = Quaternion.LookRotation( this.transform.forward );
+
             bullet.ParentNumber = playerNumber_;
 
             if( LockOn() != null )
@@ -147,6 +155,11 @@ public class PlayerManager : MonoBehaviour
             {
                 bullet.MoveDirection = this.transform.forward;
             }
+
+            float bulletSize = bullet.gameObject.transform.lossyScale.x;
+
+            bullet.transform.position = this.transform.position+bulletSize*bullet.MoveDirection*1.5f;
+            bullet.transform.rotation = Quaternion.LookRotation( bullet.MoveDirection );
 
             --playerStatus_.OwnedBulletNumber;
         }
@@ -351,8 +364,21 @@ public class PlayerManager : MonoBehaviour
     // ロックオン圏内に入った
     private void OnTriggerEnter( Collider collider )
     {
+        if( collider.isTrigger )
+        {
+            return;
+        }
+
         if( collider.gameObject.layer == 8 )
         {
+            for( int number = 0; number < searchTargetObjects_.Count; number++ )
+            {
+                if( collider.gameObject.name == searchTargetObjects_[number].name )
+                {
+                    return;
+                }
+            }
+
             searchTargetObjects_.Add( collider.gameObject );
         }
     }

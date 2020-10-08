@@ -37,15 +37,13 @@ public class CameraMove : MonoBehaviour
     private void Update()
     {
         CameraRotate();
-
-        Move();
     }
 
 
     // カメラ移動
-    private void Move()
+    public void Move( Vector3 moveDistance )
     {
-        this.rigidBody_.velocity = playerManager_.MoveDistance;
+        this.transform.position += moveDistance;
     }
 
 

@@ -84,8 +84,9 @@ public class BulletManager : MonoBehaviour
     // 着弾
     private void OnTriggerEnter( Collider collider )
     {
-        if( isCollision_ )
-        {
+        if( ( isCollision_ )
+        ||  ( collider.isTrigger )
+        ){
             return;
         }
 
@@ -101,7 +102,7 @@ public class BulletManager : MonoBehaviour
                 
             }
 
-            Destroy( this.gameObject, 0.1f );
+            Destroy( this.gameObject );
 
             isCollision_ = true;
         }

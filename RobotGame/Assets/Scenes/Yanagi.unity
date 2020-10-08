@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 191387033}
   m_Layer: 8
   m_Name: PL2
-  m_TagString: PL1
+  m_TagString: PL2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -191,7 +191,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!136 &191387036
 CapsuleCollider:
@@ -304,8 +304,8 @@ GameObject:
   - component: {fileID: 371949049}
   - component: {fileID: 371949048}
   m_Layer: 8
-  m_Name: Cube
-  m_TagString: Untagged
+  m_Name: PL1
+  m_TagString: PL1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -566,13 +566,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 490960538}
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalRotation: {x: 0.40821788, y: 0.23456976, z: -0.10938167, w: 0.8754261}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 50, y: 30, z: 0}
 --- !u!1 &497049463
 GameObject:
   m_ObjectHideFlags: 0
@@ -796,8 +796,8 @@ GameObject:
   - component: {fileID: 807842319}
   - component: {fileID: 807842318}
   m_Layer: 8
-  m_Name: Cube (1)
-  m_TagString: Untagged
+  m_Name: PL2
+  m_TagString: PL2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1221,7 +1221,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!65 &1551409233
 BoxCollider:
@@ -1234,7 +1234,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 50, y: 1, z: 30}
+  m_Size: {x: 25, y: 1, z: 25}
   m_Center: {x: 0, y: 0, z: 15}
 --- !u!114 &1551409234
 MonoBehaviour:
@@ -1540,8 +1540,8 @@ GameObject:
   - component: {fileID: 2046872464}
   - component: {fileID: 2046872463}
   m_Layer: 8
-  m_Name: Cube
-  m_TagString: Untagged
+  m_Name: PL2
+  m_TagString: PL2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
