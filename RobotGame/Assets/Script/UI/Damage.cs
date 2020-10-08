@@ -19,7 +19,7 @@ public class Damage : MonoBehaviour
     void Update()
     {
         // aｷｰ入力でﾀﾞﾒｰｼﾞ(ﾃｽﾄ用@@@)
-        if(Input.GetKeyDown("a"))
+        //if(Input.GetKeyDown("a"))
         {
             _slider.value -= damage;
             Debug.Log("ダメージ！");

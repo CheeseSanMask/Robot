@@ -81,4 +81,11 @@ public class InputManager : MonoBehaviour
     {
         return Input.GetButtonDown( "Reload_"+number );
     }
+
+
+    // スラスター入力
+    public bool ThrusterInput( int number )
+    {
+        return Input.GetButton( "Thruster_"+number );
+    }
 }

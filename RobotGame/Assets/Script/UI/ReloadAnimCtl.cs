@@ -4,14 +4,14 @@ using UnityEngine.UI;
 
 public class ReloadAnimCtl : MonoBehaviour
 {
-    Image _ReloAnim;
+    [SerializeField]
+    private Image _ReloAnim;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        // ｲﾒｰｼﾞを取得する
-        _ReloAnim = GameObject.Find("ReloadGauge").GetComponent<Image>();
-    }
+    [SerializeField]
+    private InputManager _inputManager;
+
+    [SerializeField]
+    private PlayerManager _playerManager;
 
     // ｱﾆﾒｰｼｮﾝ再生用ｶｳﾝﾄ
     float animCnt = 0f;
@@ -21,7 +21,7 @@ public class ReloadAnimCtl : MonoBehaviour
     void Update()
     {
         // ﾘﾛｰﾄﾞをする
-        if(Input.GetKeyDown("r"))
+        if( _inputManager.ReloadInput( _playerManager.PlayerNumber ) )
         {
             reloadFlag = true;
         }

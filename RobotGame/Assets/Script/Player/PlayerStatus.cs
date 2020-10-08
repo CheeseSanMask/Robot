@@ -35,17 +35,17 @@ public class PlayerStatus : MonoBehaviour
     }
 
     // 防御力
-    [SerializeField] private float defencePower_;
-    public float DefencePower
+    [SerializeField] private float guardPower_;
+    public float GuardPower
     {
         get
         {
-            return defencePower_;
+            return guardPower_;
         }
 
         set
         {
-            defencePower_ = value;
+            guardPower_ = value;
         }
     }
 
@@ -107,5 +107,92 @@ public class PlayerStatus : MonoBehaviour
         {
             ownedBulletNumber_ = value;
         }
+    }
+
+    // スラスター
+    [SerializeField] private float thruster_;
+    public float Thruster
+    {
+        get
+        {
+            return thruster_;
+        }
+
+        set
+        {
+            thruster_ = value;
+        }
+    }
+
+    // 最大体力
+    private float hitPointMax_;
+    public float HitPointMax
+    {
+        get
+        {
+            return hitPointMax_;
+        }
+    }
+
+    // 最大攻撃力
+    private float attackPowerMax_;
+    public float AttackPowerMax
+    {
+        get
+        {
+            return attackPowerMax_;
+        }
+    }
+
+    // 最大防御力
+    private float guardPowerMax_;
+    public float GuardPowerMax
+    {
+        get
+        {
+            return guardPowerMax_;
+        }
+    }
+
+    // 最大移動速度
+    private float moveSpeedMax_;
+    public float MoveSpeedMax
+    {
+        get
+        {
+            return moveSpeedMax_;
+        }
+    }
+
+    // 最大リロード速度
+    private float reloadSpeedMax_;
+    public float ReloadSpeedMax
+    {
+        get
+        {
+            return reloadSpeedMax_;
+        }
+    }
+
+    // 最大スラスター容量
+    private float thrusterMax_;
+    public float ThrusterMax
+    {
+        get
+        {
+            return thrusterMax_;
+        }
+    }
+
+
+    // 最大初期化
+    private void Start()
+    {
+        hitPointMax_    = hitPoint_;
+        attackPowerMax_ = attackPower_;
+        guardPowerMax_  = guardPower_;
+        moveSpeedMax_   = moveSpeed_;
+        reloadSpeedMax_ = reloadSpeed_;
+        thrusterMax_    = thruster_;
     }
 }

@@ -111,6 +111,8 @@ public class PlayerManager : MonoBehaviour
 
         Jump();
 
+        Thruster();
+
         WeaponChange();
     }
 
@@ -262,6 +264,37 @@ public class PlayerManager : MonoBehaviour
     }
 
 
+    private void Thruster()
+    {
+        if( inputManager_.ThrusterInput( playerNumber_ ) )
+        {
+            if( playerStatus_.Thruster <= 0 )
+            {
+                playerStatus_.Thruster = 0;
+                playerStatus_.MoveSpeed = playerStatus_.MoveSpeedMax;
+
+                return;
+            }
+            else
+            {
+                --playerStatus_.Thruster;
+            }
+
+            playerStatus_.MoveSpeed *= 1.5f;
+        }
+        else
+        {
+            if( playerStatus_.ThrusterMax <= playerStatus_.Thruster )
+            {
+                playerStatus_.Thruster = playerStatus_.ThrusterMax;
+            }
+
+            playerStatus_.MoveSpeed = playerStatus_.MoveSpeedMax;
+        }
+    }
+
+
+    // リロード
     private void Reload()
     {
         if( ( !inputManager_.ReloadInput( playerNumber_ ) )
@@ -283,6 +316,7 @@ public class PlayerManager : MonoBehaviour
     }
 
 
+    // 武器変更
     private void WeaponChange()
     {
         int moveNumber = inputManager_.WeaponChangeInput( playerNumber_ );
@@ -355,7 +389,7 @@ public class PlayerManager : MonoBehaviour
     // ダメージを受けた
     public void HitDamege( float damage )
     {
-        float actuallyDamage = Mathf.Clamp( damage-playerStatus_.DefencePower, 5, damage );
+        float actuallyDamage = Mathf.Clamp( damage-playerStatus_.GuardPower, 5, damage );
 
         playerStatus_.HitPoint -= actuallyDamage;
     }

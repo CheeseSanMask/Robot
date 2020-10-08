@@ -4,26 +4,23 @@ using UnityEngine.UI;
 
 public class WeaponBarCtl : MonoBehaviour
 {
-    Slider _mainBar;
-    Slider _subBar;
+    [SerializeField]
+    private Slider _mainBar;
 
-    Text _mainRemain;
-    Text _subRemain;
+    [SerializeField]
+    private Slider _subBar;
 
-    Image _mainReloAnim;
-    Image _subReloAnim;
+    [SerializeField]
+    private Text _mainRemain;
 
+    [SerializeField]
+    private Text _subRemain;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        _mainBar = GameObject.Find("MainWSlider").GetComponent<Slider>();
-        _subBar = GameObject.Find("SubWSlider").GetComponent<Slider>();
-        _mainRemain = GameObject.Find("MainWText").GetComponent<Text>();
-        _subRemain = GameObject.Find("SubWText").GetComponent<Text>();
-        _mainReloAnim = GameObject.Find("ReloadGauge1").GetComponent<Image>();
-        _subReloAnim = GameObject.Find("ReloadGauge2").GetComponent<Image>();
-    }
+    [SerializeField]
+    private Image _mainReloAnim;
+
+    [SerializeField]
+    private Image _subReloAnim;
 
     float mainAnimCnt = 0f;
     float subAnimCnt = 0f;
@@ -41,7 +38,7 @@ public class WeaponBarCtl : MonoBehaviour
         if(!mainReloFlag)
         {
             _mainRemain.text = ((int)_mainBar.value).ToString("000");
-            if (Input.GetMouseButtonDown(0))
+            //if (Input.GetMouseButtonDown(0))
             {
                 mainOwn--;
             }
@@ -68,7 +65,7 @@ public class WeaponBarCtl : MonoBehaviour
         if(!subReloFlag)
         {
             _subRemain.text = ((int)_subBar.value).ToString("000");
-            if (Input.GetMouseButtonDown(1))
+            //if (Input.GetMouseButtonDown(1))
             {
                 subOwn--;
             }
