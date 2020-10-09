@@ -20,8 +20,8 @@ public class PlayerStatus : MonoBehaviour
     }
 
     // 攻撃力
-    [SerializeField] private float attackPower_;
-    public float AttackPower
+    [SerializeField] private float[] attackPower_;
+    public float[] AttackPower
     {
         get
         {
@@ -64,48 +64,48 @@ public class PlayerStatus : MonoBehaviour
         }
     }
 
-    // リロード速度
-    [SerializeField] private float reloadSpeed_;
-    public float ReloadSpeed
+    // リロード時間
+    [SerializeField] private float[] reloadTime_;
+    public float[] ReloadTime
     {
         get
         {
-            return reloadSpeed_;
+            return reloadTime_;
         }
 
         set
         {
-            reloadSpeed_ = value;
+            reloadTime_ = value;
         }
     }
 
-    // 合計段数
-    [SerializeField] private float allBulletNumber_;
-    public float AllBulletNumber
+    // 総弾数
+    [SerializeField] private float[] allBulletCount_;
+    public float[] AllBulletCount
     {
         get
         {
-            return allBulletNumber_;
+            return allBulletCount_;
         }
 
         set
         {
-            allBulletNumber_ = value;
+            allBulletCount_ = value;
         }
     }
 
     // 装弾数
-    [SerializeField] private float ownedBulletNumber_;
-    public float OwnedBulletNumber
+    [SerializeField] private float[] ownedBulletCount_;
+    public float[] OwnedBulletCount
     {
         get
         {
-            return ownedBulletNumber_;
+            return ownedBulletCount_;
         }
 
         set
         {
-            ownedBulletNumber_ = value;
+            ownedBulletCount_ = value;
         }
     }
 
@@ -135,8 +135,8 @@ public class PlayerStatus : MonoBehaviour
     }
 
     // 最大攻撃力
-    private float attackPowerMax_;
-    public float AttackPowerMax
+    private float[] attackPowerMax_ = new float[(int)WeaponType.Max];
+    public float[] AttackPowerMax
     {
         get
         {
@@ -164,13 +164,33 @@ public class PlayerStatus : MonoBehaviour
         }
     }
 
-    // 最大リロード速度
-    private float reloadSpeedMax_;
-    public float ReloadSpeedMax
+    // 最大リロード時間
+    [SerializeField]private float[] reloadTimeMax_ = new float[(int)WeaponType.Max];
+    public float[] ReloadTimeMax
     {
         get
         {
-            return reloadSpeedMax_;
+            return reloadTimeMax_;
+        }
+    }
+
+    // 最大総弾数
+    private float[] allBulletCountMax_ = new float[(int)WeaponType.Max];
+    public float[] AllBulletCounterMax
+    {
+        get
+        {
+            return allBulletCountMax_;
+        }
+    }
+
+    // 最大装填数
+    private float[] ownedBulletCountMax_ = new float[(int)WeaponType.Max];
+    public float[] OwnedBulletCountMax
+    {
+        get
+        {
+            return ownedBulletCountMax_;
         }
     }
 
@@ -188,11 +208,22 @@ public class PlayerStatus : MonoBehaviour
     // 最大初期化
     private void Start()
     {
-        hitPointMax_    = hitPoint_;
-        attackPowerMax_ = attackPower_;
-        guardPowerMax_  = guardPower_;
-        moveSpeedMax_   = moveSpeed_;
-        reloadSpeedMax_ = reloadSpeed_;
-        thrusterMax_    = thruster_;
+        hitPointMax_        = hitPoint_;
+        guardPowerMax_      = guardPower_;
+        moveSpeedMax_       = moveSpeed_;
+        thrusterMax_        = thruster_;
+       
+        for( int number = 0; number < (int)WeaponType.Max; number++ )
+        {
+            attackPowerMax_[number]     = attackPower_[number];
+            reloadTimeMax_[number]      = reloadTime_[number];
+            allBulletCountMax_[number]  = allBulletCount_[number];
+
+            int bulletCount = (int)allBulletCountMax_[number]/3;
+
+            ownedBulletCountMax_[number] = bulletCount;
+            ownedBulletCount_[number]    = ownedBulletCountMax_[number];
+            allBulletCount_[number]     -= OwnedBulletCountMax[number];
+        }
     }
 }

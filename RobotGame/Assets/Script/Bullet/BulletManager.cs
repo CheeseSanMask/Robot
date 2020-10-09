@@ -10,6 +10,9 @@ public class BulletManager : MonoBehaviour
     // 弾速
     [SerializeField] private float bulletSpeed_;
 
+    // 当たったか
+    private bool isCollision_;
+
     // 火力
     [SerializeField] private float attackPower_;
     public float AttackPower
@@ -17,6 +20,11 @@ public class BulletManager : MonoBehaviour
         get
         {
             return attackPower_;
+        }
+
+        set
+        {
+            attackPower_ = value;
         }
     }
 
@@ -34,9 +42,6 @@ public class BulletManager : MonoBehaviour
             moveDirection_ = value;
         }
     }
-
-    // 当たったか
-    private bool isCollision_;
 
     // 親
     private int parentNumber_;
@@ -93,7 +98,7 @@ public class BulletManager : MonoBehaviour
         if( ( collider.name != "PL"+parentNumber_   )
         &&  ( collider.gameObject.layer == 8        )
         ){
-            if( collider.tag == "PL"+( parentNumber_ == 2 ? 0 : 1 ) )
+            if( collider.tag == "PL"+( parentNumber_ == 2 ? 1 : 2 ) )
             {
                 collider.GetComponent<PlayerManager>().HitDamege( attackPower_ );
             }

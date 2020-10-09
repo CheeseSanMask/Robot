@@ -14,6 +14,8 @@ public class HpBarCtl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _slider.value = _playerStatus.HitPoint;
+        float percentage = _playerStatus.HitPoint/_playerStatus.HitPointMax;
+
+        _slider.value = percentage;
     }
 }

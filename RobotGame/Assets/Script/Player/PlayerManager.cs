@@ -41,17 +41,41 @@ public class PlayerManager : MonoBehaviour
     // ステータス
     private PlayerStatus playerStatus_;
 
-    // 最大装弾数
-    private float owned_Bullet_Max_Number_;
-
     // ジャンプ状態
     private JumpStatus jumpStatus_;
+
+    // スラスターを酷使したか
+    private bool isThrusterEmpty_;
+    public  bool IsThrusterEmpty
+    {
+        get
+        {
+            return isThrusterEmpty_;
+        }
+    }
+
+    // リロード中か
+    private bool isReload_;
+    public  bool IsReload
+    {
+        get
+        {
+            return isReload_;
+        }
+    }
 
     // 武器リスト
     [SerializeField] private List<GameObject> weapons;
 
     //  現在の武器種類
-    private WeaponType currentWeapon_;
+    private int currentWeapon_;
+    public  int CurrentWeapon
+    {
+        get
+        {
+            return currentWeapon_;
+        }
+    }
 
     // 前フレームの座標
     private Vector3 lastPosition_;
@@ -77,23 +101,21 @@ public class PlayerManager : MonoBehaviour
 
         playerStatus_ = GetComponent<PlayerStatus>();
 
-        owned_Bullet_Max_Number_ = playerStatus_.OwnedBulletNumber;
-
         jumpStatus_ = JumpStatus.Non;
 
-        currentWeapon_ = WeaponType.MainWeapon;
+        isThrusterEmpty_ = false;
+
+        isReload_ = false;
+
+        currentWeapon_ = (int)WeaponType.MainWeapon;
 
         moveDistance_ = Vector3.zero;
     }
 
 
-    // 初期装填
+    // 初期値
     private void Start()
     {
-        owned_Bullet_Max_Number_ = playerStatus_.AllBulletNumber/3;
-        playerStatus_.AllBulletNumber -= owned_Bullet_Max_Number_;
-        playerStatus_.OwnedBulletNumber = owned_Bullet_Max_Number_;
-
         lastPosition_ = this.transform.position;
     }
 
@@ -138,14 +160,19 @@ public class PlayerManager : MonoBehaviour
     // 撃つ
     private void Shot()
     {
+        if( isReload_ )
+        {
+            return;
+        }
+
         if( inputManager_.ShotInput( playerNumber_ ) )
         {
-            if( playerStatus_.OwnedBulletNumber <= 0 )
+            if( playerStatus_.OwnedBulletCount[currentWeapon_] <= 0 )
             {
                 return;
             }
 
-            BulletManager bullet = Instantiate( weapons[(int)currentWeapon_] ).GetComponent<BulletManager>();
+            BulletManager bullet = Instantiate( weapons[currentWeapon_] ).GetComponent<BulletManager>();
 
             bullet.ParentNumber = playerNumber_;
 
@@ -162,8 +189,9 @@ public class PlayerManager : MonoBehaviour
 
             bullet.transform.position = this.transform.position+bulletSize*bullet.MoveDirection*1.5f;
             bullet.transform.rotation = Quaternion.LookRotation( bullet.MoveDirection );
+            bullet.AttackPower = playerStatus_.AttackPower[currentWeapon_];
 
-            --playerStatus_.OwnedBulletNumber;
+            --playerStatus_.OwnedBulletCount[currentWeapon_];
         }
     }
 
@@ -263,15 +291,17 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-
+    // スラスター
     private void Thruster()
     {
-        if( inputManager_.ThrusterInput( playerNumber_ ) )
-        {
+        if( ( inputManager_.ThrusterInput( playerNumber_ ) )
+        &&  ( !isThrusterEmpty_ )
+        ){
             if( playerStatus_.Thruster <= 0 )
             {
                 playerStatus_.Thruster = 0;
                 playerStatus_.MoveSpeed = playerStatus_.MoveSpeedMax;
+                isThrusterEmpty_ = true;
 
                 return;
             }
@@ -280,13 +310,16 @@ public class PlayerManager : MonoBehaviour
                 --playerStatus_.Thruster;
             }
 
-            playerStatus_.MoveSpeed *= 1.5f;
+            playerStatus_.MoveSpeed *= 1.05f;
         }
         else
         {
+            playerStatus_.Thruster += ( isThrusterEmpty_ ? 0.025f : 0.1f );
+
             if( playerStatus_.ThrusterMax <= playerStatus_.Thruster )
             {
                 playerStatus_.Thruster = playerStatus_.ThrusterMax;
+                isThrusterEmpty_ = false;
             }
 
             playerStatus_.MoveSpeed = playerStatus_.MoveSpeedMax;
@@ -297,28 +330,51 @@ public class PlayerManager : MonoBehaviour
     // リロード
     private void Reload()
     {
+        if( isReload_ )
+        {
+            --playerStatus_.ReloadTime[currentWeapon_];
+
+            if( playerStatus_.ReloadTime[currentWeapon_] <= 0 )
+            {
+                isReload_ = false;
+                playerStatus_.ReloadTime[currentWeapon_] = playerStatus_.ReloadTimeMax[currentWeapon_];
+            }
+
+            return;
+        }
+
         if( ( !inputManager_.ReloadInput( playerNumber_ ) )
-        ||  (  playerStatus_.OwnedBulletNumber == owned_Bullet_Max_Number_ )
+        ||  (  playerStatus_.OwnedBulletCount == playerStatus_.OwnedBulletCountMax )
         ){
             return;
         }
 
-        float addBulletNumber = owned_Bullet_Max_Number_-playerStatus_.OwnedBulletNumber;
+        float addBulletCount = playerStatus_.OwnedBulletCountMax[currentWeapon_]-playerStatus_.OwnedBulletCount[currentWeapon_];
 
-        if( playerStatus_.AllBulletNumber < addBulletNumber )
+        if( playerStatus_.AllBulletCount[currentWeapon_] < addBulletCount )
         {
-            addBulletNumber = playerStatus_.AllBulletNumber;
-            owned_Bullet_Max_Number_ = playerStatus_.AllBulletNumber;
+            addBulletCount = playerStatus_.AllBulletCount[currentWeapon_];
+            playerStatus_.OwnedBulletCount[currentWeapon_] = addBulletCount;
+            playerStatus_.AllBulletCount[currentWeapon_] = 0;
+
+            return;
         }
 
-        playerStatus_.AllBulletNumber -= addBulletNumber;
-        playerStatus_.OwnedBulletNumber = owned_Bullet_Max_Number_;
+        playerStatus_.AllBulletCount[currentWeapon_] -= addBulletCount;
+        playerStatus_.OwnedBulletCount[currentWeapon_] = playerStatus_.OwnedBulletCountMax[currentWeapon_];
+        isReload_ = true;
+        playerStatus_.ReloadTime[currentWeapon_] = playerStatus_.ReloadTimeMax[currentWeapon_];
     }
 
 
     // 武器変更
     private void WeaponChange()
     {
+        if( isReload_ )
+        {
+            return;
+        }
+
         int moveNumber = inputManager_.WeaponChangeInput( playerNumber_ );
 
         if ( moveNumber == 0 )
@@ -338,7 +394,7 @@ public class PlayerManager : MonoBehaviour
             nextWeaponNumber = 0;
         }
 
-        currentWeapon_ = (WeaponType)nextWeaponNumber;
+        currentWeapon_ = nextWeaponNumber;
     }
 
 
@@ -352,7 +408,7 @@ public class PlayerManager : MonoBehaviour
 
         GameObject lockOnTarget_ = null;
 
-        for( int number = 0; number < searchTargetObjects_.Count; number++ )
+        for( int number = 0; number < searchTargetObjects_.Count; ++number )
         {
             Vector3 direction = ( searchTargetObjects_[number].transform.position-camera_.transform.position ).normalized;
 
@@ -405,7 +461,7 @@ public class PlayerManager : MonoBehaviour
 
         if( collider.gameObject.layer == 8 )
         {
-            for( int number = 0; number < searchTargetObjects_.Count; number++ )
+            for( int number = 0; number < searchTargetObjects_.Count; ++number )
             {
                 if( collider.gameObject.name == searchTargetObjects_[number].name )
                 {
@@ -421,7 +477,7 @@ public class PlayerManager : MonoBehaviour
     // ロックオン圏内から出た
     private void OnTriggerExit( Collider collider )
     {
-        for( int number = 0; number < searchTargetObjects_.Count; number++ )
+        for( int number = 0; number < searchTargetObjects_.Count; ++number )
         {
             if( searchTargetObjects_[number] == collider.gameObject )
             {

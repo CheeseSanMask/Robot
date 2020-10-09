@@ -28,7 +28,7 @@ public class TimerScript : MonoBehaviour
         remainTime -= Time.deltaTime;
 
         // ﾀｲﾏｰ表示用UIﾃｷｽﾄに時間を表示する
-        for( int n = 0; n < timerTexts.Length; n++ )
+        for( int n = 0; n < timerTexts.Length; ++n )
         {
             timerTexts[n].text = remainTime.ToString("f2");
         }

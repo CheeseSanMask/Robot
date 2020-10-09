@@ -10,6 +10,12 @@ public class JetGaugeCtl : MonoBehaviour
     [SerializeField]
     private PlayerStatus _playerStatus;
 
+    [SerializeField]
+    private PlayerManager _playerManager;
+
+    [SerializeField]
+    private InputManager _inputManager;
+
     bool restFlag = false;      // 強制停止ﾌﾗｸﾞ
 
     // Update is called once per frame
@@ -23,37 +29,20 @@ public class JetGaugeCtl : MonoBehaviour
         }
 
         // ｼﾞｪｯﾄ可能のとき
-        //if (restFlag == false)
-        //{
-        //    // ｽﾍﾟｰｽｷｰ入力でｹﾞｰｼﾞを消費する
-        //    if(  )
-        //    {
-        //        _jetGauge.color = new Color(0, 218, 231, 255);
-        //    }
-        //    //else
-        //    {
-        //        // 最大値まで回復する
-        //        if (remainJet < 1)
-        //        {
-        //            remainJet += 0.00025f;
-        //        }
-        //    }
-        //}
-        //else
-        //{
-        //    // 通常時よりゆっくり回復する
-        //    remainJet += 0.0001f;
-        //    if (remainJet >= 1)
-        //    {
-        //        restFlag = false;
-        //    }
-        //}
+        if (!_playerManager.IsThrusterEmpty)
+        {
+            // ｽﾍﾟｰｽｷｰ入力でｹﾞｰｼﾞを消費する
+            if ( _inputManager.ThrusterInput( _playerManager.PlayerNumber ) )
+            {
+                _jetGauge.color = new Color(0, 218, 231, 255);
+            }
+        }
 
         // 通常は非表示
         if (_playerStatus.Thruster >= 100)
         {
             _jetGauge.color = new Color(0, 218, 231, 0);
-        }
+        }   
         else
         {
             _jetGauge.color = new Color(0, 218, 231, 255);
