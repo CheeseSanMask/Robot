@@ -447,7 +447,7 @@ public class PlayerManager : MonoBehaviour
     {
         float actuallyDamage = Mathf.Clamp( damage-playerStatus_.GuardPower, 5, damage );
 
-        playerStatus_.HitPoint -= actuallyDamage;
+        playerStatus_.LifePoint -= actuallyDamage;
     }
 
 

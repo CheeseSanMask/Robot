@@ -16,15 +16,12 @@ public class JetGaugeCtl : MonoBehaviour
     [SerializeField]
     private InputManager _inputManager;
 
-    bool restFlag = false;      // 強制停止ﾌﾗｸﾞ
-
     // Update is called once per frame
     void Update()
     {
         // 残量がなくなったらｼﾞｪｯﾄ不可
         if(_playerStatus.Thruster <= 0)
         {
-            restFlag = true;
             _jetGauge.color = new Color(255, 0, 0, 255);
         }
 

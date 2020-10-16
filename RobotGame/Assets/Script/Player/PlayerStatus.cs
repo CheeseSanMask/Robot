@@ -5,17 +5,17 @@ using UnityEngine;
 public class PlayerStatus : MonoBehaviour
 {
     // 体力
-    [SerializeField] private float hitPoint_;
-    public float HitPoint
+    [SerializeField] private float lifePoint_;
+    public float LifePoint
     {
         get
         {
-            return hitPoint_;
+            return lifePoint_;
         }
 
         set
         {
-            hitPoint_ = value;
+            lifePoint_ = value;
         }
     }
 
@@ -94,7 +94,7 @@ public class PlayerStatus : MonoBehaviour
         }
     }
 
-    // 装弾数
+    // 装填数
     [SerializeField] private float[] ownedBulletCount_;
     public float[] OwnedBulletCount
     {
@@ -208,7 +208,7 @@ public class PlayerStatus : MonoBehaviour
     // 最大初期化
     private void Start()
     {
-        hitPointMax_        = hitPoint_;
+        hitPointMax_        = lifePoint_;
         guardPowerMax_      = guardPower_;
         moveSpeedMax_       = moveSpeed_;
         thrusterMax_        = thruster_;
